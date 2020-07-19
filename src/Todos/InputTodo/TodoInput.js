@@ -6,8 +6,9 @@ import {
   label,
   createReactiveModel,
   div,
-  ul,
+  ol,
   li,
+  p,
 } from "../../../bin/reactive-model.js"
 
 const [todoList, setTodoList, addTdoListChangeListener] = createReactiveModel(
@@ -18,14 +19,32 @@ const [
   setSingleTodo,
   addSingleTodoChangeListener,
 ] = createReactiveModel("")
+const noTodActions = p`content=${"No actions added"} class=${"no-action-message"}`
 
 addSingleTodoChangeListener((data) => console.log("single value : ", data))
 addSingleTodoChangeListener(console.log)
 
 addTdoListChangeListener(console.log)
 addTdoListChangeListener((data) => {
-  const lis = data.map(({ value }) => li`content=${value}`)
-  addNode(null, ul`children=${lis}`, document.getElementById("todo-list-view"))
+  if (data.length === 0) {
+    addNode(
+      null,
+      noTodActions,
+      document.getElementById("todo-list-view")
+    )
+    return
+  }
+
+  const lis = data.map(
+    ({ value }) =>
+      li`content=${value} class=${"list-style"} children=${[
+        p`content=${value}`,
+        button`content=${"Delete this"} onClick=${(e) =>
+          setTodoList(todoList.value.filter((x) => x.value !== value))}`,
+      ]}`
+  )
+
+  addNode(null, ol`children=${lis}`, document.getElementById("todo-list-view"))
 })
 
 const children = []
@@ -59,7 +78,7 @@ const addTodInputBox = () =>
 const todoListView = () => {
   addNode(
     document.getElementById("todo-list-view"),
-    div`content=${"Todo List View"}`
+    noTodActions
   )
 }
 

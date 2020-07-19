@@ -163,6 +163,7 @@ const label = createElement("label")
 const numberBox = createElement("input", "number")
 const form = createElement("form")
 const ul = createElement("ul")
+const ol = createElement("ol")
 const li = createElement("li")
 
 export {
@@ -179,4 +180,5 @@ export {
   form,
   ul,
   li,
+  ol,
 }
