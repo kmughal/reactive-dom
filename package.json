@@ -7,7 +7,8 @@
     "Reactive-Dom": "reactive-model.js"
   },
   "scripts": {
-      },
+    "deploy": "gh-pages -d build"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kmughal/Reactive-Dom.git"
@@ -18,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/kmughal/Reactive-Dom/issues"
   },
-  "homepage": "https://github.com/kmughal/Reactive-Dom#readme"
+  "homepage": "https://github.com/kmughal/Reactive-Dom#readme",
+  "dependencies": {
+    "gh-pages": "^3.1.0"
+  }
 }
