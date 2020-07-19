@@ -5,44 +5,62 @@ import {
   textbox,
   label,
   createReactiveModel,
-  numberBox,
-} from "../../reactive-model.js"
+  div,
+  ul,
+  li,
+} from "../../../bin/reactive-model.js"
 
-const [name, setName, addNameChangeListener] = createReactiveModel("")
-const [age, setAge] = createReactiveModel(0)
+const [todoList, setTodoList, addTdoListChangeListener] = createReactiveModel(
+  []
+)
+const [
+  singleTodo,
+  setSingleTodo,
+  addSingleTodoChangeListener,
+] = createReactiveModel("")
 
-addNameChangeListener(console.log)
+addSingleTodoChangeListener((data) => console.log("single value : ", data))
+addSingleTodoChangeListener(console.log)
+
+addTdoListChangeListener(console.log)
+addTdoListChangeListener((data) => {
+  const lis = data.map(({ value }) => li`content=${value}`)
+  addNode(null, ul`children=${lis}`, document.getElementById("todo-list-view"))
+})
 
 const children = []
 
-// Name
-children.push(label`content=${"Name :"} for=${"txt-name"}`)
+// Todo Title
+children.push(label`content=${"Title :"} for=${"todo-title"}`)
 children.push(
-  textbox`id=${"txt-name"} value=${name.value} onKeyUp=${(e) => {
-    setName(e.target.value)
+  textbox`id=${"todo-title"} 
+  name=${"todo-title"}
+  value=${singleTodo}
+  onKeyUp=${(e) => {
+    setSingleTodo(e.target.value)
   }}`
 )
-
-// Age
-children.push(label`content=${"Age :"} for=${"txt-age"}`)
-children.push(
-  numberBox`id=${"txt-age"} value=${age.value} onKeyUp=${(e) => {
-    setAge(e.target.value)
-  }}`
-)
-
 
 // Submit Button
 children.push(
-  button`content=${"Submit"} onClick=${(e) => {
-    console.log({ name, age })
+  button`content=${"Add"} onClick=${(e) => {
+    setTodoList([...todoList.value, singleTodo])
+    setSingleTodo("")
+    e.preventDefault()
   }}`
 )
 
-const attachNode = () =>
+const addTodInputBox = () =>
   addNode(
     document.getElementById("todo-input-box"),
     form`content=${""} children=${children}`
   )
 
-export { attachNode }
+const todoListView = () => {
+  addNode(
+    document.getElementById("todo-list-view"),
+    div`content=${"Todo List View"}`
+  )
+}
+
+export { addTodInputBox, todoListView }

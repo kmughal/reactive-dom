@@ -1,51 +1,58 @@
+const normalise = (str) =>
+  String(str)
+    .trim()
+    .replace(/[\r\n]+/gm, "")
+    .replace(" ", "")
+
+function ReactiveValue(value) {
+  this.value = value
+}
+
+// TODO In order to share reference this can be done in a different way just for the sake of pub/sub
+let _listOfSubscribers = null
 function createReactiveModel(defaultValue = null) {
   const list = []
-
+  // TODO reference assignment should be avoided
+  _listOfSubscribers = list
   function publish(_v) {
     for (const i in list) {
       if (Object.is(list[i].reference, _v)) {
-        list[i].callback(_v.value)
-        if (list[i].attachEvents) {
-          for (let e in list[i].attachEvents) {
-            document
-              .getElementById(list[i].attachEvents[e].id)
-              .addEventListener(
-                list[i].attachEvents[e].event,
-                list[i].attachEvents[e].method
-              )
-          }
+        const callbacks = list[i].callback
+        for (let cb of callbacks) {
+          cb(_v.value)
         }
       }
     }
   }
 
   return new (function () {
-    let _value = { value: defaultValue }
+    let _value = new ReactiveValue(defaultValue)
 
-    function addSubscriber(markupFunc, parentId, eleId) {
-      var sameref = false
-      for (let i in list) {
-        var f = Object.is(list[i].reference, _value)
-        if (f) sameref = true
+    function addSubscriber(callback) {
+      // var sameref = false
+
+      const lookup = list.filter((x) => Object.is(x.reference, _value))
+      if (lookup.length === 0) {
+        list.push({ reference: _value, callback: [callback] })
+      } else {
+        lookup[0].callback.push(callback)
       }
-
-      if (sameref) return
-      list.push({
-        reference: _value,
-        callback: function (data) {
-          const html = markupFunc(data)
-          if (!parentId && !eleId) return
-          const parent = document.getElementById(parentId)
-          if (parent) addNode(parent, html)
-          else {
-            const ele = document.getElementById(eleId)
-            addNode(null, html, ele)
-          }
-        },
-      })
     }
+
+    function isObject(value) {
+      return value !== undefined && value.constructor === Object
+    }
+
     function updater(value) {
-      _value.value = value
+      if (Array.isArray(_value.value)) {
+        _value.value.length = 0
+        value.forEach((v) => {
+          _value.value.push(new ReactiveValue(v.value))
+        })
+      } else if (isObject(_value.value))
+        _value.value = { ..._value.value, ...value }
+      else _value.value = value
+
       publish(_value)
     }
     return [_value, updater, addSubscriber]
@@ -56,10 +63,11 @@ const createElement = (tagName, subType) => (strings, ...args) => {
   const events = []
   const props = []
   if (String(strings).indexOf("=") === -1) {
-    props.push({ name: "content", value: strings.join("").trim() })
+    props.push({ name: "content", value: trim(strings.join("")) })
   } else
     for (let index in strings) {
-      var part = String(strings[index]).replace("=", "").replace(" ", "")
+      var part = String(strings[index]).replace("=", "")
+      part = normalise(part)
       if (part.length === 0) continue
       part = String(part).toLocaleLowerCase()
       if (part.startsWith("on")) {
@@ -92,13 +100,32 @@ function addNode(parentEl, component, ele = null) {
 
   let children = null
   for (let prop of component.props) {
+    prop.name = normalise(prop.name)
     if (
+      prop.name !== "value" &&
       prop.name !== "children" &&
       prop.value &&
       String(prop.value).trim()?.length
     )
       ele.setAttribute(prop.name, prop.value)
     else if (prop.name === "children") children = prop
+    else if (
+      prop.name === "value" &&
+      prop.value.constructor === ReactiveValue
+    ) {
+      // TODO dangerous!
+
+      const lookup = _listOfSubscribers.filter((x) =>
+        Object.is(x.reference, prop.value)
+      )
+
+      if (lookup.length) {
+        lookup[0].callback.push((data) => {
+          // TODO Check this for Radio, Checkbox, Select, File controls
+          ele.value = data
+        })
+      }
+    }
   }
 
   const contents = findPropertyWithValue(component.props, "content")
@@ -110,6 +137,7 @@ function addNode(parentEl, component, ele = null) {
   }
 
   if (children) {
+    ele.textContent = null
     for (let child of children.value) {
       addNode(ele, child)
     }
@@ -132,8 +160,10 @@ const button = createElement("button")
 const section = createElement("section")
 const textbox = createElement("input", "text")
 const label = createElement("label")
-const numberBox = createElement("input" , "number")
+const numberBox = createElement("input", "number")
 const form = createElement("form")
+const ul = createElement("ul")
+const li = createElement("li")
 
 export {
   addNode,
@@ -146,5 +176,7 @@ export {
   div,
   label,
   numberBox,
-  form
+  form,
+  ul,
+  li,
 }
