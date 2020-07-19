@@ -1,0 +1,22 @@
+{
+  "name": "reactive-dom",
+  "version": "1.0.0",
+  "description": "This is an experimental project in which I don't want to use any build agents which are out there such as webpack, rollup etc.",
+  "main": "index.js",
+  "bin": {
+    "Reactive-Dom": "reactive-model.js"
+  },
+  "scripts": {
+      },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kmughal/Reactive-Dom.git"
+  },
+  "keywords": [],
+  "author": "Khurram Mughal",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kmughal/Reactive-Dom/issues"
+  },
+  "homepage": "https://github.com/kmughal/Reactive-Dom#readme"
+}
