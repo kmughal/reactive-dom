@@ -1,14 +1,14 @@
 import { h1, addNode } from "../bin/reactive-model.js"
 
-if (location.pathname === "/index.html") {
-  addNode(document.getElementById("page-heading"), h1`content=${"Todos"}`)
-  loadTodo()
-} else if (location.pathname === "/simple-watch.html") {
+if (location.href.toString().endsWith("simple-watch.html")) {
   addNode(
     document.getElementById("page-heading"),
     h1`content=${"Simple Watch"}`
   )
   loadWatch()
+} else {
+  addNode(document.getElementById("page-heading"), h1`content=${"Todos"}`)
+  loadTodo()
 }
 
 function loadTodo() {
