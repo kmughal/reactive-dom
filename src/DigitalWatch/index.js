@@ -9,9 +9,12 @@ function renderWatch(date, init = false) {
 
 addSubscriber(renderWatch)
 
-const startClock = () => renderWatch(watch.value, true)
+const startClock = () => {
+  renderWatch(watch.value, true)
 
-setInterval(() => {
-  setWatch(new Date())
-}, 10)
+  setInterval(() => {
+    setWatch(new Date())
+  }, 10)
+}
+
 export { startClock }

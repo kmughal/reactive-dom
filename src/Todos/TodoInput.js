@@ -5,7 +5,7 @@ import {
   textbox,
   label,
   createReactiveModel,
-  div,
+  normalise,
   ol,
   li,
   p,
@@ -63,6 +63,10 @@ children.push(
 // Submit Button
 children.push(
   button`content=${"Add"} onClick=${(e) => {
+    if (normalise(singleTodo.value).length === 0 ) {
+      alert("can not enter empty todo!")
+      return
+    }
     setTodoList([...todoList.value, singleTodo])
     setSingleTodo("")
     e.preventDefault()
