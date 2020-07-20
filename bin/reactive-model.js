@@ -85,16 +85,17 @@ const createElement = (tagName, subType) => (strings, ...args) => {
 }
 
 function addNode(parentEl, component, ele = null) {
-  if (ele === null && parentEl === null) {
-    console.warn("parent and ele both are null!")
-    return
-  }
   let id = null
   const searchId = findPropertyWithValue(component.props, "id")
 
   if (searchId.length) {
     id = searchId[0].value
     ele = document.getElementById(id)
+  }
+
+  if (ele === null && parentEl === null) {
+    console.warn("parent and ele both are null!")
+    return
   }
 
   if (!ele) {
