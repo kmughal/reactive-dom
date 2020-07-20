@@ -9,7 +9,7 @@ import {
   ol,
   li,
   p,
-} from "../../../bin/reactive-model.js"
+} from "../../bin/reactive-model.js"
 
 const [todoList, setTodoList, addTdoListChangeListener] = createReactiveModel(
   []
