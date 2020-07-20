@@ -64,7 +64,7 @@ children.push(
 children.push(
   button`content=${"Add"} onClick=${(e) => {
     if (normalise(singleTodo.value).length === 0 ) {
-      alert("can not enter empty todo!")
+      alert("can not enter empty todo - error")
       return
     }
     setTodoList([...todoList.value, singleTodo])
